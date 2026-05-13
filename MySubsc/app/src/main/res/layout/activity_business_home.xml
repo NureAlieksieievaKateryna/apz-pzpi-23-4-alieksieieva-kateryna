@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_bg">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:text="Welcome 👋"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_gray"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/businessNameText"
+                    android:text="Business Inc."
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_dark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/roleText"
+                    android:text="Role: Owner"
+                    android:textColor="@color/purple"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/logoutBtn"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_logout_circle"
+                android:padding="10dp"
+                android:src="@android:drawable/ic_lock_power_off"
+                android:contentDescription="logout"
+                app:tint="#FFFFFF" />
+        </LinearLayout>
+
+        <TextView
+            android:text="Role: Owner"
+            android:textColor="@color/purple"
+            android:textSize="14sp"
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_gradient">
+
+            <TextView
+                android:text="Current Plan"
+                android:textColor="#EDE9FE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Business Plan"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="$99.00 / month"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:layout_marginTop="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Next billing: May 15, 2026"
+                android:textColor="#EDE9FE"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- STATISTICS -->
+
+        <GridLayout
+            android:columnCount="2"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Active Subscriptions\n24\n+3 this month"
+                android:background="@drawable/bg_card"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:layout_width="0dp"
+                android:layout_height="110dp"
+                android:layout_columnWeight="1"/>
+
+            <TextView
+                android:text="Users\n18 / 50\n+2 this month"
+                android:background="@drawable/bg_card"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:layout_width="0dp"
+                android:layout_height="110dp"
+                android:layout_columnWeight="1"/>
+
+            <TextView
+                android:text="Revenue\n$2,450\n+12.5%"
+                android:background="@drawable/bg_card"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:layout_width="0dp"
+                android:layout_height="110dp"
+                android:layout_columnWeight="1"/>
+
+            <TextView
+                android:text="Payments\n8\nPending"
+                android:background="@drawable/bg_card"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:layout_width="0dp"
+                android:layout_height="110dp"
+                android:layout_columnWeight="1"/>
+        </GridLayout>
+
+
+        <!-- QUICK ACTIONS -->
+
+        <TextView
+            android:text="Quick Actions"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/text_dark"
+            android:layout_marginTop="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <GridLayout
+            android:columnCount="2"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/createSubscriptionBtn"
+                android:text="Create Subscription"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_columnWeight="1"/>
+
+            <Button
+                android:id="@+id/clientsBtn"
+                android:text="Clients"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_columnWeight="1"/>
+
+            <Button
+                android:id="@+id/paymentsBtn"
+                android:text="Payments"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_columnWeight="1"/>
+
+            <Button
+                android:id="@+id/analyticsBtn"
+                android:text="Analytics"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_columnWeight="1"/>
+
+        </GridLayout>
+
+    </LinearLayout>
+
+</ScrollView>
