@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F7F5FF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="22dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Find businesses"
+            android:textColor="#111827"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose a business and flexible subscription"
+            android:textColor="#6B7280"
+            android:textSize="14sp"
+            android:layout_marginTop="6dp" />
+
+        <EditText
+            android:id="@+id/searchInput"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="20dp"
+            android:background="@android:drawable/edit_text"
+            android:hint="Search gym, cafe, beauty..."
+            android:inputType="text"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp" />
+
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="14dp"
+            android:backgroundTint="#5B3FFF"
+            android:text="Search"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF" />
+
+        <LinearLayout
+            android:id="@+id/businessContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:orientation="vertical" />
+
+    </LinearLayout>
+</ScrollView>

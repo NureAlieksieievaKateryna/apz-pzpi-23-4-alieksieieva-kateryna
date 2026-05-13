@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F7F5FF"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Subscription Builder"
+                android:textColor="#111827"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Create flexible subscription plans for your business"
+                android:textColor="#6B7280"
+                android:textSize="15sp" />
+
+            <!-- GENERAL -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:background="@drawable/bg_card_white"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="22dp">
+
+                <TextView
+                    android:text="General Information"
+                    android:textColor="#111827"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/planName"
+                    android:hint="Plan name"
+                    android:background="@drawable/bg_input"
+                    android:layout_marginTop="18dp"
+                    android:padding="16dp"
+                    android:textColor="#111827"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp" />
+
+                <EditText
+                    android:id="@+id/planDescription"
+                    android:hint="Subscription description"
+                    android:background="@drawable/bg_input"
+                    android:gravity="top"
+                    android:layout_marginTop="14dp"
+                    android:padding="16dp"
+                    android:textColor="#111827"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/planPrice"
+                        android:hint="29.99"
+                        android:inputType="numberDecimal"
+                        android:background="@drawable/bg_input"
+                        android:padding="16dp"
+                        android:textColor="#111827"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1" />
+
+                    <Space
+                        android:layout_width="12dp"
+                        android:layout_height="wrap_content" />
+
+                    <Spinner
+                        android:id="@+id/billingSpinner"
+                        android:background="@drawable/bg_input"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- COMPONENTS -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:background="@drawable/bg_card_white"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="22dp">
+
+                <TextView
+                    android:text="Subscription Components"
+                    android:textColor="#111827"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="Configure features, limits and add-ons"
+                    android:textColor="#6B7280"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:id="@+id/componentsContainer"
+                    android:orientation="vertical"
+                    android:layout_marginTop="18dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/addComponentBtn"
+                    android:text="+ Add Component"
+                    android:textAllCaps="false"
+                    android:textStyle="bold"
+                    android:textColor="#5B3FFF"
+                    android:backgroundTint="#EDE9FE"
+                    android:layout_marginTop="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp" />
+
+            </LinearLayout>
+
+            <!-- REVENUE -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:background="@drawable/bg_gradient"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:text="Estimated Revenue"
+                    android:textColor="#EDE9FE"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/revenuePreview"
+                    android:text="$2,990 / month"
+                    android:textColor="#FFFFFF"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="Revenue preview based on active subscriptions"
+                    android:textColor="#EDE9FE"
+                    android:layout_marginTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <!-- CREATE -->
+
+            <Button
+                android:id="@+id/createSubscriptionBtn"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="30dp"
+                android:backgroundTint="#5B3FFF"
+                android:text="Create Subscription"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </ScrollView>

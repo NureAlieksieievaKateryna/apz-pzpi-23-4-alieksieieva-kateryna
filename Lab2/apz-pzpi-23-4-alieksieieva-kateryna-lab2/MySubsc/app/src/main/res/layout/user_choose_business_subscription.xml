@@ -1,0 +1,154 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:text="Choose Subscription"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="Select a business plan that fits your needs"
+            android:textSize="15sp"
+            android:textColor="@color/text_gray"
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:hint="Search subscriptions..."
+            android:padding="16dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_card"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Netflix Business"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Premium Streaming Plan"
+                android:textColor="@color/text_gray"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="$12.99 / month"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/purple"
+                android:layout_marginTop="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="Subscribe"
+                android:layout_marginTop="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Fitness Club"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Gym membership with personal trainer"
+                android:textColor="@color/text_gray"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="$29.99 / month"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/purple"
+                android:layout_marginTop="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="Subscribe"
+                android:layout_marginTop="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Online School"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Monthly access to learning courses"
+                android:textColor="@color/text_gray"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="$19.99 / month"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/purple"
+                android:layout_marginTop="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="Subscribe"
+                android:layout_marginTop="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

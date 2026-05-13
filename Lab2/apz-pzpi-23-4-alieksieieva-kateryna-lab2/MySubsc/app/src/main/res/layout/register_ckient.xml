@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F7F5FF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FlexiSubs"
+            android:textColor="#5B3FFF"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:layout_gravity="center" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_card_white"
+            android:elevation="8dp"
+            android:orientation="vertical"
+            android:padding="22dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Register as client"
+                android:textColor="#111827"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/fullNameInput"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="24dp"
+                android:background="@android:drawable/edit_text"
+                android:hint="Username"
+                android:inputType="text"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+
+            <EditText
+                android:id="@+id/emailInput"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="14dp"
+                android:background="@android:drawable/edit_text"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+
+            <EditText
+                android:id="@+id/passwordInput"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="14dp"
+                android:background="@android:drawable/edit_text"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+
+            <EditText
+                android:id="@+id/confirmPasswordInput"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="14dp"
+                android:background="@android:drawable/edit_text"
+                android:hint="Repeat password"
+                android:inputType="textPassword"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+
+            <Button
+                android:id="@+id/clientSignUpButton"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="22dp"
+                android:backgroundTint="#5B3FFF"
+                android:text="Create an account"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF" />
+
+            <TextView
+                android:id="@+id/goToLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:layout_gravity="center"
+                android:text="Already have an account? Login"
+                android:textColor="#5B3FFF"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/goToBusinessSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I am a business, register business"
+            android:textColor="#5B3FFF"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+</ScrollView>

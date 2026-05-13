@@ -1,0 +1,148 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_bg">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="All Subscriptions"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="Manage all active and inactive plans"
+            android:textColor="@color/text_gray"
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:text="+ Create New Subscription"
+            android:layout_marginTop="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Business Plan"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="$49.99 / month"
+                android:textColor="@color/purple"
+                android:textSize="18sp"
+                android:layout_marginTop="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Active clients: 120"
+                android:textColor="@color/text_gray"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="Edit Plan"
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Pro Plan"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="$24.99 / month"
+                android:textColor="@color/purple"
+                android:textSize="18sp"
+                android:layout_marginTop="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Active clients: 86"
+                android:textColor="@color/text_gray"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="Edit Plan"
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Starter Plan"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="$9.99 / month"
+                android:textColor="@color/purple"
+                android:textSize="18sp"
+                android:layout_marginTop="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Active clients: 42"
+                android:textColor="@color/text_gray"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="Edit Plan"
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
