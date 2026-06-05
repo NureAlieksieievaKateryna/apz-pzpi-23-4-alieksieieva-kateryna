@@ -1,1 +1,333 @@
+Міністерство освіти та науки України 
+Харківський національний університет радіоелектроніки 
+ 
+ 
+Кафедра Програмної Інженерії 
+ 
+ 
+ 
+ 
+Звіт 
+з дисципліни «Архітектура програмного забезпечення» 
+Лабораторна робота №4 
+ 
+ 
+ 
+ 
+ 
+ 
+Виконав:                                                                               Перевірив: 
+ст. гр. ПЗПІ-23-4                                                                  Сокорчук І. П. 
+Алєксєєва К. С. 
+ 
+ 
+ 
+ 
+ 
+ 
+Харків 2026 
+1	ІСТОРІЯ ЗМІН 
+№ 	Дата 	Версія звіту 	Опис змін та виправлень 
+1 	27.05.2026 	1.0 	Зроблено звіт 
+ 	 	 	 
+ 	 	 	 
+ 
+2	ЗАВДАННЯ 
+В цій лабораторній роботі необхідно показати як можна масштабувати бекенд системи для роботи із великим навантаженням. Для цього, можна на вибір: 
+-	масштабувати сервер горизонтально — багато копій сервера виконують однакові функції для різних користувачів; 
+-	масштабувати сервер вертикально — різні мікросервіси виконують різні функції і масштабуються окремо одне від одного.  
+З технічної точки зору, масштабування можна виконати так: 
+-	деплой сервера на Kubernetes кластер, разом із окремим load balancer-ом та базою даних. При цьому треба буде показати коректну роботу системи при збільшенні чи зменшенні кількості подів сервера чи окремих мікросервісів; 
+-	деплой в serverless середовище (AWS Lambda, Firebase Cloud Functions або аналогічне). Треба показати що система може зменшувати кількість активних інстансів до 0, збільшувати її зі збільшенням трафіку і все ще коректно функціонувати. 
+-	ваш власний спосіб показати що система може масштабуватись. 
+ 	 
+3 ОПИС ВИКОНАНОЇ РОБОТИ 
+ 
+3.1 Стратегія масштабування системи 
+Для системи Subscription Platform було обрано горизонтальне масштабування backend API. Основна ідея такого підходу полягає в запуску декількох однакових екземплярів серверної частини замість збільшення ресурсів одного сервера. Кожен pod виконує однакову бізнес-логіку та може незалежно обробляти HTTP-запити користувачів.
+У системі Subscription Platform користувачі взаємодіють із сервісом через веб-інтерфейс, виконуючи авторизацію, управління компаніями, тарифними планами, підписками та платежами. При збільшенні кількості одночасних користувачів навантаження на серверну частину зростає, тому для забезпечення стабільної роботи використовується Kubernetes.
+Kubernetes Service виконує роль балансувальника навантаження. Він надає єдину точку доступу до API, а всі вхідні HTTP-запити автоматично розподіляються між доступними pod-ами backend-застосунку. Завдяки цьому користувачі працюють з одним endpoint незалежно від фактичної кількості серверів.
+База даних PostgreSQL у даній роботі залишається єдиною точкою зберігання даних. Масштабування бази даних не розглядається, оскільки потребує окремих механізмів реплікації та кластеризації.
+Стратегія масштабування включає:
+– горизонтальне масштабування Spring Boot API через параметр replicas у Kubernetes Deployment;
+– використання Kubernetes Service для балансування HTTP-запитів;
+– винесення PostgreSQL в окремий сервіс;
+– можливість зміни кількості replicas через kubectl scale або Kubernetes Dashboard;
+– використання Horizontal Pod Autoscaler для автоматичного масштабування;
+– виконання навантажувального тестування для оцінки продуктивності системи.
+3.2	Технічні рішення, які роблять масштабування можливим 
+Для реалізації масштабування було використано контейнеризацію Docker та платформу Kubernetes таблиці 3.1. 
+Таблиця 3.1 – Компоненти рішення для масштабування 
+Компонент 	Призначення 	Роль у масштабуванні 
+Docker image subscription-platform	Контейнеризований Spring Boot backend	Дозволяє запускати однакові екземпляри API у різних pod-ах 
+Kubernetes Deployment subscription-backend	Описує бажаний стан backend API 	Дає змогу змінювати кількість replicas без перерозгортання всієї 
+системи 
+Kubernetes Service subscription-backend-service	Єдина точка доступу до API 	
+Балансує навантаження між pod-ами
+
+Deployment postgres	SQL Server у Kubernetes 	Окреме сховище даних
+Service postgres-service	
+Доступ до PostgreSQL
+	Забезпечує стабільну адресу підключення
+Horizontal Pod Autoscaler	Автоматичне масштабування	Автоматично змінює кількість pod-ів залежно від CPU
+Docker	Контейнеризація застосунку	Забезпечує однакове середовище виконання
+Kubernetes Cluster	Оркестрація контейнерів	Автоматизує розгортання та масштабування
+ 
+3.3	Аналіз вузьких місць системи 
+Під час горизонтального масштабування кількість оброблюваних HTTP-запитів може збільшуватися пропорційно кількості pod-ів лише до моменту виникнення спільного вузького місця.
+У системі Subscription Platform таким вузьким місцем є PostgreSQL, оскільки всі копії backend API використовують одну базу даних.
+. 
+Основні потенційні вузькі місця наведено в таблиці 3.2. 
+Ресурс 	Як проявляється проблема 	Що вичерпується першим 	Можливе рішення 
+CPU backend pod-ів	Повільна обробка HTTP-запитів	CPU контейнерів	Збільшення replicas
+PostgreSQL	Повільні SQL-запити	CPU, RAM, connection pool	Індекси, оптимізація запитів
+Оперативна пам'ять	Зростання часу відповіді	RAM контейнерів	Збільшення memory limits
+Дискова система PostgreSQL	Повільний запис даних	IOPS диска	Швидше сховище
+Мережа Kubernetes 	Затримки передачі даних	Пропускна здатність мережі	Оптимізація payload
+Один Kubernetes Node	Усі pod-и працюють на одному вузлі	CPU/RAM локального ПК	Використання багатовузлового кластера
+ 
+Для Subscription Platform основним обмеженням при великому навантаженні є база даних PostgreSQL, оскільки всі операції з підписками, платежами та користувачами потребують звернення до БД. 
+
+3.5 Опис навантажувального тестування 
+Для перевірки ефективності масштабування було виконано навантажувальне тестування системи Subscription Platform.
+Тестування проводилося за наступним сценарієм:
+– запуск Kubernetes-кластера;
+– розгортання системи через файл kubernetes.yaml;
+– встановлення кількості replicas = 1;
+– виконання серії HTTP-запитів до REST API;
+– повторення тестування для replicas = 3 та replicas = 5;
+– аналіз показників продуктивності.
+Під час тестування вимірювалися:
+– кількість запитів за секунду (RPS);
+– середній час відповіді;
+– кількість помилок;
+– стабільність роботи системи. 
+Таблиця 3.3 – Результати навантажувального тестування 
+Replicas API 	Concurrent users 	Total requests 	RPS 	Avg 
+latency, ms 	Failed requests 
+1 	100 	1000 	45 	420 	12 
+2 	100 	1000 	125 	145 	1 
+5 	100 	1000 	195 	88 	0 
+
+Отримані результати демонструють позитивний вплив горизонтального масштабування на продуктивність системи. При збільшенні кількості pod-ів зростає кількість запитів, які система може обробити за одиницю часу, а також зменшується середня затримка відповіді.
+ 
+
+
+
+
+
+
+
+
+
+
+Рисунок 3.1 – Dashboard моніторингу Kubernetes-кластера системи Subscription Platform
+
+ 
+Рисунок 3.2 – Dashboard моніторингу Kubernetes-кластера системи Subscription Platform
+
+
+На рисунку 3.1 представлено веб-інтерфейс моніторингу Kubernetes-кластера, розроблений для демонстрації процесу масштабування системи Subscription Platform. У верхній частині інтерфейсу відображається простір імен (namespace) та кнопка оновлення інформації про стан кластера.
+Основна частина інтерфейсу містить список pod-ів, у яких розгорнуто серверну частину системи та базу даних PostgreSQL. Для кожного pod-а відображаються його назва, поточний стан, рівень готовності (Ready), кількість перезапусків, завантаження процесора та використання оперативної пам'яті. На момент демонстрації запущено три екземпляри backend-застосунку Subscription Platform та один екземпляр PostgreSQL, усі з яких перебувають у стані Running.
+У нижній частині інтерфейсу відображено інформацію про Horizontal Pod Autoscaler. Зокрема показано мінімальну та максимальну кількість pod-ів (2 та 10 відповідно), поточну кількість запущених екземплярів (3 pod-и), цільовий рівень завантаження процесора (70%) та поточне середнє навантаження (48%). Статус ScaleStable свідчить про стабільний стан системи та відсутність необхідності автоматичного масштабування на момент спостереження.
+Представлений dashboard використовується для моніторингу стану Kubernetes-кластера, контролю навантаження на серверну частину системи та демонстрації механізмів горизонтального масштабування Subscription Platform.
+На рисунку 3.2 представлено результати успішного розгортання системи Subscription Platform у середовищі Docker Desktop Kubernetes. Зображення складається з чотирьох логічних частин, які демонструють роботу контейнерів, Kubernetes-кластера, Docker-образів та результат виконання команд моніторингу.
+У верхній лівій частині відображено вкладку Containers Docker Desktop. Тут видно, що в системі успішно працюють три екземпляри backend-застосунку Subscription Platform та один контейнер PostgreSQL. Усі контейнери перебувають у стані Running, що свідчить про успішне розгортання системи. Також відображається використання процесора та оперативної пам'яті кожним контейнером.
+У верхній правій частині відображено вкладку Kubernetes. З неї видно, що Kubernetes-кластер містить один Node, два Deployment, два Service та чотири запущені Pod-и. Усі ресурси перебувають у стані Running, що підтверджує коректну роботу механізму оркестрації контейнерів.
+У нижній лівій частині представлено список Docker-образів. Тут видно образ Spring Boot застосунку subscription-platform, який використовується для запуску backend-сервісів, а також офіційний образ postgres:16, що використовується для розгортання бази даних PostgreSQL.
+У нижній правій частині відображено результат виконання команди kubectl get all. З результатів видно, що Kubernetes успішно створив Pod-и, Deployment-и, ReplicaSet-и, Service та Horizontal Pod Autoscaler. Backend-застосунок працює у трьох екземплярах, а HPA налаштований на автоматичне масштабування від двох до десяти Pod-ів при досягненні завантаження процесора понад 70%.
+Представлений рисунок підтверджує успішне розгортання Subscription Platform у Kubernetes та демонструє готовність системи до горизонтального масштабування.
+
+
+4 ВИСНОВКИ 
+У ході виконання лабораторної роботи було досліджено можливості масштабування веб-застосунку Subscription Platform за допомогою Kubernetes. Було реалізовано контейнеризацію серверної частини на базі Docker, налаштовано Kubernetes Deployment, Service та Horizontal Pod Autoscaler.
+В результаті виконаної роботи було забезпечено можливість горизонтального масштабування Spring Boot API шляхом запуску декількох копій застосунку. Kubernetes Service забезпечує балансування навантаження між pod-ами, а Horizontal Pod Autoscaler автоматично змінює кількість екземплярів сервера залежно від навантаження на процесор.
+Проведене навантажувальне тестування підтвердило, що зі збільшенням кількості replicas система здатна обробляти більшу кількість запитів за секунду при зменшенні часу відповіді. Отримані результати підтверджують ефективність використання Kubernetes для побудови масштабованих веб-застосунків та демонструють готовність Subscription Platform до роботи зі значною кількістю одночасних користувачів.
+
+ 	  
+ДОДАТОК А 
+Відеозапис 
+Посилання на відео: 
+Хронологічний опис відеозапису: 
+00:00 – Вступ 
+00:10 – Мета роботи 
+00:25 – Як налаштоване розгортання 
+01:06 – Як зроблена перевірка навантаження системи 
+01:48 – Розгортання системи 
+03:38 – Керування системою 
+04:40 – Запуск тесту 
+06:21 – Огляд результатів 
+06:25 – Видалення системи   
+ДОДАТОК В 
+Запити до ШІ 
+В.1 Генерація PowerShell-інсталятора для Kubernetes 
+Назва 	інструменту 	та 	версія: 	ChatGPT 5.5. 
+Мета 	використання: 	отримання прикладу PowerShell-скрипта для автоматизованого розгортання backend-системи Subscription Platform у Kubernetes без ручного запуску окремих kubectl-команд. 
+Внесок автора: адаптовано приклад під власний проєкт Subscription Platform, додано збірку Docker image subscription-platform, застосування Kubernetes manifest-файлу, очікування готовності backend deployment та PostgreSQL, а також масштабування backend API до вказаної кількості replicas.. 
+Промпт: 
+«Напиши приклад PowerShell-інсталятора для Windows, який автоматизовано розгортає Spring Boot backend Subscription Platform у Docker Desktop Kubernetes. Скрипт має перевіряти наявність docker і kubectl, збирати Docker image subscription-platform, застосовувати kubernetes.yaml через kubectl, чекати готовності PostgreSQL і backend deployment, а потім масштабувати backend API до вказаної кількості replicas.»
+Результат: 
+В.2 Генерація Kubernetes manifest-файлу для масштабування backend API
+Назва 	інструменту 	та 	версія: 	ChatGPT. 
+Мета: отримання прикладу Kubernetes manifest-файлу для розгортання Spring Boot backend, PostgreSQL, Service LoadBalancer та Horizontal Pod Autoscaler.
+Внесок автора: адаптовано згенерований приклад під Subscription Platform, змінено назви deployment-ів, Docker image, порти, параметри підключення до PostgreSQL, кількість replicas, resource limits та параметри автоматичного масштабування HPA.
+Промпт: 
+«Напиши Kubernetes manifest для Spring Boot застосунку Subscription Platform. Manifest має містити Deployment для backend з 3 replicas, Service типу LoadBalancer, Deployment для PostgreSQL, Service для PostgreSQL та HorizontalPodAutoscaler, який масштабує backend від 2 до 10 pod-ів при CPU більше 70%.»
+Результат: 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscription-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: subscription-backend
+  template:
+    metadata:
+      labels:
+        app: subscription-backend
+    spec:
+      containers:
+        - name: subscription-backend
+          image: subscription-platform:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1024Mi"
+            requests:
+              cpu: "0.5"
+              memory: "512Mi"
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres-service:5432/db"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "test"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "123"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscription-backend-service
+spec:
+  selector:
+    app: subscription-backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          env:
+            - name: POSTGRES_USER
+              value: "test"
+            - name: POSTGRES_PASSWORD
+              value: "123"
+            - name: POSTGRES_DB
+              value: "db"
+          ports:
+            - containerPort: 5432
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: subscription-backend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: subscription-backend
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70 
+
+В.3 Генерація Kubernetes manifest-файлу для масштабування backend API
+Назва 	інструменту 	та 	версія: 	ChatGPT. 
+Мета: отримання прикладу панелі керування для демонстрації масштабування backend-системи Subscription Platform у Kubernetes.
+Внесок автора: адаптовано приклад під власний проєкт, додано меню для перегляду pod-ів, service-ів, HPA, зміни кількості replicas, перегляду логів backend API та відкриття REST API у браузері.
+Промпт: 
+«Напиши приклад PowerShell dashboard для керування Kubernetes deployment Subscription Platform. Dashboard має дозволяти переглядати pod-и, service-и, HPA, масштабувати deployment subscription-backend, переглядати логи backend та відкривати backend API у браузері.»
+Результат: 
+
+1   $BackendDeployment = "subscription-backend"
+2   $ApiUrl = "http://localhost:8080"
+3
+4   function Show-Pods {
+5       kubectl get pods -o wide
+6   }
+7
+8   function Show-Services {
+9       kubectl get services
+10  }
+11
+12  function Show-Hpa {
+13      kubectl get hpa
+14  }
+15
+16  function Scale-Api {
+17      $replicas = Read-Host "New backend replica count"
+18
+19      kubectl scale deployment/$BackendDeployment `
+20          --replicas=$replicas
+21
+22      kubectl rollout status deployment/$BackendDeployment `
+23          --timeout=180s
+24  }
+25
+26  function Show-Logs {
+27      kubectl logs deployment/$BackendDeployment `
+28          --tail=120
+29  }
+30
+31  function Open-Api {
+32      Start-Process $ApiUrl
+33  }
+34
+35  Show-Pods
+36  Show-Services
+37  Show-Hpa
+
 
