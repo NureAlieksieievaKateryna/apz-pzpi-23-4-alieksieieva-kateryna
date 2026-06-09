@@ -1,0 +1,64 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db
+    #url: jdbc:postgresql://azureserver.postgres.database.azure.com:5432/postgres?sslmode=require
+#    username: qwerty
+#    password: Kate2018
+    username: test
+    password: 123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /reminder/swagger/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger/swagger-ui.html
+
+server:
+  port: 8080
+  address: 0.0.0.0
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+keycloak:
+  auth-server-url: http://localhost:8088
+  realm: FlexiSub
+  resource: FlexiSub
+  credentials:
+    secret: LokuXYkaL6IXz4cJWtE9A9eAJvjy0Cry
+
+cache:
+  initial-capacity: 100
+  expire-after-write-hours: 4
+  maximum-size: 500
+
+
+jwt:
+  auth:
+    converter:
+      principal-attribute: preferred_username
+      resource-id: FlexiSub
+      secret: "2Yp5vW3r9tB6fL1gP8sQxZ7uR4mV9yN2kH0jD3aL6eF8wJ1q"
+      expiration: 86400000
+
+
+#qwerty
+#Password01
+#
+#
+#
+#  alekseeva.katay1@gmail.com
+#  Идентификатор объекта или приложения администратора2164d173-2ae0-4072-8993-6e0cbf2792ee

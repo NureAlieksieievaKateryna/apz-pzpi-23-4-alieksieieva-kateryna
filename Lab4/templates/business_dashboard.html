@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Business Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #dbeafe, #dcfce7, #f3e8ff);
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .box {
+            background: rgba(255,255,255,0.7);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        h1, h2 {
+            color: #05445E;
+        }
+
+        input {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #aaa;
+            width: 220px;
+        }
+
+        button {
+            background: #05445E;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+
+        .danger {
+            color: red;
+            font-weight: bold;
+        }
+
+        .template {
+            background: white;
+            padding: 15px;
+            border-radius: 14px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <div class="box">
+        <h1>Business Dashboard</h1>
+
+        <input id="businessId" type="number" placeholder="Business ID">
+        <button onclick="loadDashboard()">Load Dashboard</button>
+        <button onclick="location.href='business_templates.html'">Manage Plans</button>
+    </div>
+
+    <div class="box">
+        <h2>Business Info</h2>
+        <div id="businessInfo">Enter business ID and click Load Dashboard</div>
+    </div>
+
+    <div class="box">
+        <h2>Subscription Plans</h2>
+        <div id="templatesList"></div>
+    </div>
+
+</div>
+
+<script>
+    const BASE_URL = "http://localhost:8080";
+
+    async function loadDashboard() {
+        const businessId = document.getElementById("businessId").value;
+
+        if (!businessId) {
+            alert("Enter business ID");
+            return;
+        }
+
+        localStorage.setItem("businessId", businessId);
+
+        try {
+            const response = await fetch(`${BASE_URL}/subscriptions/business/${businessId}/dashboard`, {
+                method: "GET",
+                headers: getHeaders()
+            });
+
+            if (!response.ok) {
+                throw new Error("Cannot load dashboard. Status: " + response.status);
+            }
+
+            const data = await response.json();
+
+            document.getElementById("businessInfo").innerHTML = `
+                <p><b>ID:</b> ${data.businessId}</p>
+                <p><b>Name:</b> ${data.name}</p>
+                <p><b>Description:</b> ${data.description}</p>
+                <p><b>Type:</b> ${data.type}</p>
+                <p><b>Verified:</b> 
+                    <span class="${data.businessVerified ? 'success' : 'danger'}">
+                        ${data.businessVerified ? 'YES' : 'NO'}
+                    </span>
+                </p>
+                <p><b>Login:</b> ${data.login}</p>
+                <p><b>Email:</b> ${data.email}</p>
+            `;
+
+            renderTemplates(data.templates || []);
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    function renderTemplates(templates) {
+        const container = document.getElementById("templatesList");
+
+        if (templates.length === 0) {
+            container.innerHTML = "<p>No subscription plans yet</p>";
+            return;
+        }
+
+        container.innerHTML = templates.map(t => `
+            <div class="template">
+                <h3>${t.name}</h3>
+                <p><b>ID:</b> ${t.id}</p>
+                <p><b>Description:</b> ${t.description}</p>
+                <p><b>Price:</b> ${t.basePrice}</p>
+                <p><b>Duration:</b> ${t.durationDays} days</p>
+                <p><b>Status:</b> ${t.status}</p>
+            </div>
+        `).join("");
+    }
+
+    function getHeaders() {
+        const token = localStorage.getItem("token");
+
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (token) {
+            headers["Authorization"] = "Bearer " + token;
+        }
+
+        return headers;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel | Subscription Platform</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #eef2f7;
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #21194f;
+            color: white;
+            padding: 24px;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 30px;
+        }
+
+        .menu-item {
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .menu-item.active {
+            background: #5b4bff;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        header {
+            background: white;
+            padding: 20px 35px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        main {
+            padding: 30px 35px;
+        }
+
+        .badge {
+            background: #5b4bff;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 14px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            margin-bottom: 18px;
+        }
+
+        .card h3 {
+            color: #475569;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        input, select, textarea {
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+            outline: none;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            padding: 0;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            background: #5b4bff;
+        }
+
+        .btn-success {
+            background: #16a34a;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #64748b;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: white;
+            background: #ca8a04;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #64748b;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            color: #475569;
+            font-weight: bold;
+        }
+
+        .value {
+            float: right;
+            color: #5b4bff;
+        }
+
+        pre {
+            background: #111827;
+            color: #e5e7eb;
+            padding: 22px;
+            border-radius: 16px;
+            min-height: 520px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+
+        .tabs button {
+            background: #e0e7ff;
+            color: #3730a3;
+            margin-right: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tabs button.active {
+            background: #5b4bff;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 520px;
+            border-radius: 18px;
+            padding: 24px;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            height: 120px;
+            margin: 12px 0;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <h2>Subscription Admin</h2>
+        <div class="menu-item active" onclick="showPage('businessPage', this)">🏢 Business Moderation</div>
+        <div class="menu-item" onclick="showPage('scalingPage', this)">⚡ Scaling & Load</div>
+    </aside>
+
+    <div class="content">
+
+        <header>
+            <h1>Admin Panel</h1>
+            <span class="badge">Subscription Platform</span>
+        </header>
+
+        <main>
+
+            <!-- BUSINESS MODERATION PAGE -->
+            <section id="businessPage" class="page active">
+
+                <div class="cards">
+                    <div class="card">
+                        <h3>Not verified</h3>
+                        <p id="totalPending">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Approved today</h3>
+                        <p id="approvedToday">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Rejected today</h3>
+                        <p id="rejectedToday">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total loaded</h3>
+                        <p id="totalLoaded">0</p>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <input id="searchInput" type="text" placeholder="Search business...">
+
+                    <select id="categoryFilter">
+                        <option value="">All categories</option>
+                        <option value="RESTAURANT">Restaurant</option>
+                        <option value="FITNESS">Fitness</option>
+                        <option value="BEAUTY">Beauty</option>
+                        <option value="EDUCATION">Education</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+
+                    <button onclick="loadBusinesses()">Refresh</button>
+                </div>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Business</th>
+                        <th>Owner</th>
+                        <th>Email</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="businessTableBody">
+                    <tr>
+                        <td colspan="8" class="empty">No data</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </section>
+
+            <!-- SCALING PAGE -->
+            <section id="scalingPage" class="page">
+
+                <h2 style="margin-bottom: 20px;">Масштабирование и нагрузка</h2>
+
+                <div class="grid">
+
+                    <div>
+
+                        <div class="card">
+                            <h3>Backend Scaling</h3>
+
+                            <label>Backend Replicas <span id="replicasValue" class="value">3</span></label>
+                            <input id="replicas" type="range" min="1" max="15" value="3">
+
+                            <label>CPU Limit <span id="cpuValue" class="value">1</span></label>
+                            <input id="cpu" type="range" min="1" max="4" value="1">
+
+                            <label>Memory MB <span id="memoryValue" class="value">1024</span></label>
+                            <input id="memory" type="range" min="512" max="8192" step="512" value="1024">
+                        </div>
+
+                        <div class="card">
+                            <h3>Autoscaling HPA</h3>
+
+                            <label>
+                                <input id="hpaEnabled" type="checkbox" checked>
+                                Enable autoscaling
+                            </label>
+
+                            <label>Min Replicas <span id="minValue" class="value">2</span></label>
+                            <input id="minReplicas" type="range" min="1" max="5" value="2">
+
+                            <label>Max Replicas <span id="maxValue" class="value">10</span></label>
+                            <input id="maxReplicas" type="range" min="3" max="20" value="10">
+
+                            <label>Target CPU % <span id="targetValue" class="value">70</span></label>
+                            <input id="targetCpu" type="range" min="40" max="90" value="70">
+                        </div>
+
+                        <div class="card">
+                            <h3>Load Test</h3>
+
+                            <label>Virtual Users <span id="usersValue" class="value">500</span></label>
+                            <input id="users" type="range" min="10" max="5000" step="10" value="500">
+
+                            <label>Duration seconds <span id="durationValue" class="value">180</span></label>
+                            <input id="duration" type="range" min="30" max="3600" step="30" value="180">
+
+                            <label>Load Profile</label>
+                            <select id="loadProfile">
+                                <option value="CONSTANT">Constant Load</option>
+                                <option value="RAMP_UP">Ramp Up</option>
+                                <option value="SPIKE">Spike Test</option>
+                            </select>
+
+                            <button onclick="generateConfig()">Generate Config</button>
+                        </div>
+
+                    </div>
+
+                    <div class="card">
+                        <h3>Generated Configuration Files</h3>
+
+                        <div class="tabs">
+                            <button id="tabKube" class="active" onclick="showConfig('kube')">kubernetes.yaml</button>
+                            <button id="tabDocker" onclick="showConfig('docker')">docker-compose.yaml</button>
+                            <button id="tabK6" onclick="showConfig('k6')">k6-script.js</button>
+                        </div>
+
+                        <button onclick="downloadConfig()">Download Current File</button>
+
+                        <pre id="codePreview"></pre>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div id="moderationModal" class="modal">
+    <div class="modal-content">
+        <h2>Moderate Business</h2>
+        <p id="modalBusinessInfo"></p>
+        <textarea id="moderationComment" placeholder="Write moderation comment..."></textarea>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn-danger" onclick="submitModeration(false)">Reject</button>
+            <button class="btn-success" onclick="submitModeration(true)">Approve</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ADMIN_API_URL = "http://localhost:8080/admin";
+
+    let businesses = [];
+    let selectedBusiness = null;
+    let approvedTodayCount = 0;
+    let rejectedTodayCount = 0;
+
+    let currentTab = "kube";
+    let configs = {
+        kube: "",
+        docker: "",
+        k6: ""
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadBusinesses();
+        generateConfig();
+
+        document.getElementById("searchInput").addEventListener("input", renderBusinesses);
+        document.getElementById("categoryFilter").addEventListener("change", renderBusinesses);
+
+        [
+            "replicas", "cpu", "memory",
+            "minReplicas", "maxReplicas", "targetCpu",
+            "users", "duration"
+        ].forEach(id => {
+            document.getElementById(id).addEventListener("input", generateConfig);
+        });
+
+        document.getElementById("hpaEnabled").addEventListener("change", generateConfig);
+        document.getElementById("loadProfile").addEventListener("change", generateConfig);
+    });
+
+    function showPage(pageId, element) {
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.getElementById(pageId).classList.add("active");
+
+        document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("active"));
+        element.classList.add("active");
+    }
+
+    async function loadBusinesses() {
+        try {
+            const response = await fetch(`${ADMIN_API_URL}/checkAllNotVerifiedBusiness`, {
+                method: "GET",
+                headers: getHeaders()
+            });
+
+            if (!response.ok) {
+                throw new Error("Status: " + response.status);
+            }
+
+            businesses = await response.json();
+            renderBusinesses();
+            updateStats();
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderBusinesses() {
+        const tbody = document.getElementById("businessTableBody");
+        const search = document.getElementById("searchInput").value.toLowerCase();
+        const category = document.getElementById("categoryFilter").value;
+
+        const filtered = businesses.filter(b => {
+            const text = `
+                ${b.id || ""}
+                ${b.name || ""}
+                ${b.businessName || ""}
+                ${b.ownerFullName || ""}
+                ${b.email || ""}
+            `.toLowerCase();
+
+            return text.includes(search) && (!category || b.category === category);
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="empty">No businesses found</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(b => `
+            <tr>
+                <td>${b.id ?? "-"}</td>
+                <td>${b.businessName ?? b.name ?? "-"}</td>
+                <td>${b.ownerFullName ?? "-"}</td>
+                <td>${b.email ?? "-"}</td>
+                <td>${b.category ?? "OTHER"}</td>
+                <td><span class="status">NOT VERIFIED</span></td>
+                <td>${formatDate(b.createdAt)}</td>
+                <td>
+                    <button onclick='openModal(${JSON.stringify(b)})'>Moderate</button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    function openModal(business) {
+        selectedBusiness = business;
+
+        document.getElementById("modalBusinessInfo").innerHTML = `
+            <b>${business.businessName ?? business.name ?? "Business"}</b><br>
+            Owner: ${business.ownerFullName ?? "-"}<br>
+            Email: ${business.email ?? "-"}<br>
+            Category: ${business.category ?? "OTHER"}
+        `;
+
+        document.getElementById("moderationComment").value = "";
+        document.getElementById("moderationModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        selectedBusiness = null;
+        document.getElementById("moderationModal").style.display = "none";
+    }
+
+    async function submitModeration(isApproved) {
+        if (!selectedBusiness) return;
+
+        const comment = document.getElementById("moderationComment").value.trim();
+
+        const body = {
+            businessId: selectedBusiness.id,
+            approved: isApproved,
+            comment: comment
+        };
+
+        try {
+            const response = await fetch(`${ADMIN_API_URL}/moderate-business`, {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                throw new Error("Status: " + response.status);
+            }
+
+            businesses = businesses.filter(b => b.id !== selectedBusiness.id);
+
+            if (isApproved) approvedTodayCount++;
+            else rejectedTodayCount++;
+
+            closeModal();
+            renderBusinesses();
+            updateStats();
+
+        } catch (e) {
+            alert("Moderation error: " + e.message);
+        }
+    }
+
+    function updateStats() {
+        document.getElementById("totalPending").innerText = businesses.length;
+        document.getElementById("approvedToday").innerText = approvedTodayCount;
+        document.getElementById("rejectedToday").innerText = rejectedTodayCount;
+        document.getElementById("totalLoaded").innerText = businesses.length;
+    }
+
+    async function generateConfig() {
+        updateScalingValues();
+
+        const body = {
+            replicas: Number(document.getElementById("replicas").value),
+            cpu: Number(document.getElementById("cpu").value),
+            memory: Number(document.getElementById("memory").value),
+            hpaEnabled: document.getElementById("hpaEnabled").checked,
+            minReplicas: Number(document.getElementById("minReplicas").value),
+            maxReplicas: Number(document.getElementById("maxReplicas").value),
+            targetCpu: Number(document.getElementById("targetCpu").value),
+            users: Number(document.getElementById("users").value),
+            duration: Number(document.getElementById("duration").value),
+            loadProfile: document.getElementById("loadProfile").value
+        };
+
+        try {
+            const response = await fetch(`${ADMIN_API_URL}/scaling/generate`, {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                throw new Error("Scaling config error: " + response.status);
+            }
+
+            const data = await response.json();
+
+            configs.kube = data.kubernetes;
+            configs.docker = data.dockerCompose;
+            configs.k6 = data.k6Script;
+
+            showConfig(currentTab);
+
+        } catch (error) {
+            document.getElementById("codePreview").innerText =
+                "Backend unavailable or error:\n" + error.message;
+        }
+    }
+
+
+    function updateScalingValues() {
+        document.getElementById("replicasValue").innerText = document.getElementById("replicas").value;
+        document.getElementById("cpuValue").innerText = document.getElementById("cpu").value;
+        document.getElementById("memoryValue").innerText = document.getElementById("memory").value;
+        document.getElementById("minValue").innerText = document.getElementById("minReplicas").value;
+        document.getElementById("maxValue").innerText = document.getElementById("maxReplicas").value;
+        document.getElementById("targetValue").innerText = document.getElementById("targetCpu").value;
+        document.getElementById("usersValue").innerText = document.getElementById("users").value;
+        document.getElementById("durationValue").innerText = document.getElementById("duration").value;
+    }
+
+    function showConfig(tab) {
+        currentTab = tab;
+
+        document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+
+        if (tab === "kube") document.getElementById("tabKube").classList.add("active");
+        if (tab === "docker") document.getElementById("tabDocker").classList.add("active");
+        if (tab === "k6") document.getElementById("tabK6").classList.add("active");
+
+        document.getElementById("codePreview").innerText = configs[tab];
+    }
+
+    function downloadConfig() {
+        let filename = "config.txt";
+
+        if (currentTab === "kube") filename = "kubernetes.yaml";
+        if (currentTab === "docker") filename = "docker-compose.yaml";
+        if (currentTab === "k6") filename = "k6-script.js";
+
+        const blob = new Blob([configs[currentTab]], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+
+        URL.revokeObjectURL(url);
+    }
+
+    function getHeaders() {
+        const token = localStorage.getItem("token");
+
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (token) {
+            headers["Authorization"] = "Bearer " + token;
+        }
+
+        return headers;
+    }
+
+    function formatDate(date) {
+        if (!date) return "-";
+        return new Date(date).toLocaleDateString("ru-RU");
+    }
+</script>
+
+</body>
+</html>

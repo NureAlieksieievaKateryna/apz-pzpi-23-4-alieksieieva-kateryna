@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Explore Offers</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #a8edea, #d0f4de, #e0d4f7);
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .box {
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #05445E;
+        }
+
+        input {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            width: 70%;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background: #05445E;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .item {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .badge {
+            background: #d0f4de;
+            color: #05445E;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="box">
+        <h1>Explore Offers</h1>
+        <button onclick="location.href='user_home.html'">Back</button>
+    </div>
+
+    <div class="box">
+        <input id="userId" type="number" placeholder="User ID">
+        <br>
+        <input id="searchInput" type="text" placeholder="Search business templates..." oninput="renderTemplates()">
+        <button onclick="loadTemplates()">Refresh</button>
+
+        <div id="templates"></div>
+    </div>
+
+</div>
+
+<script>
+    const BASE_URL = "http://localhost:8080";
+    let templates = [];
+
+    async function loadTemplates() {
+        const container = document.getElementById("templates");
+        container.innerHTML = "Loading...";
+
+        try {
+            const response = await fetch(`${BASE_URL}/subscriptions/user/templates`);
+
+            if (!response.ok) {
+                throw new Error("Cannot load templates");
+            }
+
+            templates = await response.json();
+            renderTemplates();
+
+        } catch (e) {
+            container.innerHTML = "Server unavailable";
+        }
+    }
+
+    function renderTemplates() {
+        const container = document.getElementById("templates");
+        const search = document.getElementById("searchInput").value.toLowerCase();
+
+        const filtered = templates.filter(item =>
+            JSON.stringify(item).toLowerCase().includes(search)
+        );
+
+        container.innerHTML = "";
+
+        if (filtered.length === 0) {
+            container.innerHTML = "<p>No templates found</p>";
+            return;
+        }
+
+        filtered.forEach(item => {
+            const id = item.id || item.templateId;
+            const name = item.name || item.title || "Template";
+            const description = item.description || "No description";
+            const price = item.price || item.basePrice || "N/A";
+            const businessName = item.businessName || item.business?.name || "Business";
+            const type = item.type || item.businessType || item.business?.type || "OTHER";
+
+            container.innerHTML += `
+                <div class="item">
+                    <div>
+                        <strong>${name}</strong><br>
+                        <small>${description}</small><br>
+                        <small>Business: ${businessName}</small><br>
+                        <small>Price: ${price}</small><br>
+                        <span class="badge">${type}</span>
+                    </div>
+
+                    <button onclick="createSubscription(${id})">
+                        Subscribe
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    async function createSubscription(templateId) {
+        const userId = document.getElementById("userId").value;
+
+        if (!userId) {
+            alert("Enter user ID");
+            return;
+        }
+
+        localStorage.setItem("userId", userId);
+
+        const body = {
+            userId: Number(userId),
+            templateId: Number(templateId)
+        };
+
+        try {
+            const response = await fetch(`${BASE_URL}/subscriptions/user/create-subscription`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                alert("Subscription created");
+            } else {
+                const error = await response.text();
+                alert(error);
+            }
+
+        } catch (e) {
+            alert("Server unavailable");
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const saved = localStorage.getItem("userId");
+        if (saved) {
+            document.getElementById("userId").value = saved;
+        }
+
+        loadTemplates();
+    });
+</script>
+
+</body>
+</html>

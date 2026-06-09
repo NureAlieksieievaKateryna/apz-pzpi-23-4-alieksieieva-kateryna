@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Business Subscription Plans</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #a8edea, #d0f4de, #e0d4f7);
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .box {
+            background: rgba(255,255,255,0.7);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        h1, h2 {
+            color: #05445E;
+        }
+
+        input, textarea {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #aaa;
+            margin: 6px;
+            width: 250px;
+        }
+
+        textarea {
+            height: 80px;
+            width: 520px;
+        }
+
+        button {
+            background: #05445E;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .green {
+            background: #15803d;
+        }
+
+        .red {
+            background: #dc2626;
+        }
+
+        .orange {
+            background: #ea580c;
+        }
+
+        .template {
+            background: white;
+            padding: 18px;
+            border-radius: 16px;
+            margin-top: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <div class="box">
+        <h1>Subscription Plans</h1>
+
+        <input id="businessId" type="number" placeholder="Business ID">
+        <button onclick="loadTemplates()">Load Plans</button>
+        <button onclick="location.href='business_dashboard.html'">Back to Dashboard</button>
+    </div>
+
+    <div class="box">
+        <h2>Create New Plan</h2>
+
+        <input id="name" placeholder="Plan name">
+        <input id="basePrice" type="number" placeholder="Base price">
+        <input id="durationDays" type="number" placeholder="Duration days">
+        <br>
+        <textarea id="description" placeholder="Description"></textarea>
+        <br>
+        <button onclick="createTemplate()">Create Plan</button>
+    </div>
+
+    <div class="box">
+        <h2>Plans List</h2>
+        <div id="templatesList">No data</div>
+    </div>
+
+</div>
+
+<script>
+    const BASE_URL = "http://localhost:8080";
+
+    window.onload = () => {
+        const savedBusinessId = localStorage.getItem("businessId");
+        if (savedBusinessId) {
+            document.getElementById("businessId").value = savedBusinessId;
+            loadTemplates();
+        }
+    };
+
+    async function loadTemplates() {
+        const businessId = document.getElementById("businessId").value;
+
+        if (!businessId) {
+            alert("Enter business ID");
+            return;
+        }
+
+        localStorage.setItem("businessId", businessId);
+
+        try {
+            const response = await fetch(`${BASE_URL}/subscriptions/business/${businessId}`, {
+                method: "GET",
+                headers: getHeaders()
+            });
+
+            if (!response.ok) {
+                throw new Error("Cannot load plans. Status: " + response.status);
+            }
+
+            const data = await response.json();
+            renderTemplates(data);
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function createTemplate() {
+        const businessId = document.getElementById("businessId").value;
+        const name = document.getElementById("name").value;
+        const description = document.getElementById("description").value;
+        const basePrice = document.getElementById("basePrice").value;
+        const durationDays = document.getElementById("durationDays").value;
+
+        if (!businessId || !name || !basePrice || !durationDays) {
+            alert("Fill all required fields");
+            return;
+        }
+
+        const body = {
+            businessId: Number(businessId),
+            name: name,
+            description: description,
+            basePrice: Number(basePrice),
+            durationDays: Number(durationDays)
+        };
+
+        try {
+            const response = await fetch(`${BASE_URL}/subscriptions/business/template/create`, {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                throw new Error("Cannot create plan. Status: " + response.status);
+            }
+
+            clearForm();
+            await loadTemplates();
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function activateTemplate(templateId) {
+        try {
+            const response = await fetch(`${BASE_URL}/subscriptions/business/${templateId}/activate`, {
+                method: "PATCH",
+                headers: getHeaders()
+            });
+
+            if (!response.ok) {
+                throw new Error("Cannot activate plan. Status: " + response.status);
+            }
+
+            await loadTemplates();
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function deactivateTemplate(templateId) {
+        try {
+            const response = await fetch(`${BASE_URL}/subscriptions/business/${templateId}/deactivate`, {
+                method: "PATCH",
+                headers: getHeaders()
+            });
+
+            if (!response.ok) {
+                throw new Error("Cannot deactivate plan. Status: " + response.status);
+            }
+
+            await loadTemplates();
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function updateTemplate(templateId) {
+        const name = prompt("New plan name:");
+        const description = prompt("New description:");
+        const basePrice = prompt("New base price:");
+        const durationDays = prompt("New duration days:");
+
+        if (!name || !basePrice || !durationDays) {
+            alert("Update cancelled");
+            return;
+        }
+
+        const body = {
+            name: name,
+            description: description,
+            basePrice: Number(basePrice),
+            durationDays: Number(durationDays)
+        };
+
+        try {
+            const response = await fetch(`${BASE_URL}/subscriptions/business/${templateId}/update`, {
+                method: "PUT",
+                headers: getHeaders(),
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                throw new Error("Cannot update plan. Status: " + response.status);
+            }
+
+            await loadTemplates();
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    function renderTemplates(templates) {
+        const container = document.getElementById("templatesList");
+
+        if (!templates || templates.length === 0) {
+            container.innerHTML = "<p>No plans found</p>";
+            return;
+        }
+
+        container.innerHTML = templates.map(t => `
+            <div class="template">
+                <h3>${t.name}</h3>
+                <p><b>ID:</b> ${t.id}</p>
+                <p><b>Description:</b> ${t.description}</p>
+                <p><b>Price:</b> ${t.basePrice}</p>
+                <p><b>Duration:</b> ${t.durationDays} days</p>
+                <p><b>Status:</b> ${t.status}</p>
+
+                <button class="green" onclick="activateTemplate(${t.id})">Activate</button>
+                <button class="red" onclick="deactivateTemplate(${t.id})">Deactivate</button>
+                <button class="orange" onclick="updateTemplate(${t.id})">Update</button>
+            </div>
+        `).join("");
+    }
+
+    function clearForm() {
+        document.getElementById("name").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("basePrice").value = "";
+        document.getElementById("durationDays").value = "";
+    }
+
+    function getHeaders() {
+        const token = localStorage.getItem("token");
+
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (token) {
+            headers["Authorization"] = "Bearer " + token;
+        }
+
+        return headers;
+    }
+</script>
+
+</body>
+</html>

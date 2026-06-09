@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Kubernetes Scaling Panel</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            color: #1e293b;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #21194f;
+            color: white;
+            padding: 25px;
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .menu-item {
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .active {
+            background: #5b4bff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 35px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            font-weight: bold;
+            color: #475569;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        input, select {
+            margin-top: 8px;
+        }
+
+        .value {
+            float: right;
+            color: #5b4bff;
+        }
+
+        button {
+            background: #5b4bff;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        pre {
+            background: #111827;
+            color: #e5e7eb;
+            padding: 22px;
+            border-radius: 16px;
+            min-height: 500px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+
+        .info {
+            background: #eef2ff;
+            padding: 14px;
+            border-radius: 12px;
+            margin-top: 12px;
+            color: #3730a3;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <h2>Subscription Admin</h2>
+        <div class="menu-item">Dashboard</div>
+        <div class="menu-item">Businesses</div>
+        <div class="menu-item">Subscriptions</div>
+        <div class="menu-item active">Kubernetes Scaling</div>
+    </aside>
+
+    <main class="content">
+        <h1>Масштабирование Spring Boot через Kubernetes</h1>
+
+        <div class="main-grid">
+
+            <section>
+
+                <div class="card">
+                    <h3>Backend Pods</h3>
+
+                    <label>
+                        Replicas
+                        <span id="replicasValue" class="value">3</span>
+                    </label>
+                    <input id="replicas" type="range" min="1" max="10" value="3">
+
+                    <label>
+                        CPU Limit
+                        <span id="cpuValue" class="value">1</span>
+                    </label>
+                    <input id="cpu" type="range" min="1" max="4" value="1">
+
+                    <label>
+                        Memory MB
+                        <span id="memoryValue" class="value">1024</span>
+                    </label>
+                    <input id="memory" type="range" min="512" max="4096" step="512" value="1024">
+                </div>
+
+                <div class="card">
+                    <h3>Autoscaling HPA</h3>
+
+                    <label>
+                        <input id="hpaEnabled" type="checkbox" checked>
+                        Enable HPA
+                    </label>
+
+                    <label>
+                        Min Replicas
+                        <span id="minValue" class="value">2</span>
+                    </label>
+                    <input id="minReplicas" type="range" min="1" max="5" value="2">
+
+                    <label>
+                        Max Replicas
+                        <span id="maxValue" class="value">10</span>
+                    </label>
+                    <input id="maxReplicas" type="range" min="3" max="20" value="10">
+
+                    <label>
+                        Target CPU %
+                        <span id="cpuTargetValue" class="value">70</span>
+                    </label>
+                    <input id="targetCpu" type="range" min="40" max="90" value="70">
+                </div>
+
+                <div class="card">
+                    <h3>Load Test</h3>
+
+                    <label>
+                        Virtual Users
+                        <span id="usersValue" class="value">500</span>
+                    </label>
+                    <input id="users" type="range" min="10" max="5000" step="10" value="500">
+
+                    <button onclick="generateYaml()">Generate Kubernetes YAML</button>
+                    <button onclick="downloadYaml()">Download YAML</button>
+                </div>
+
+            </section>
+
+            <section class="card">
+                <h3>Generated kubernetes.yaml</h3>
+
+                <div class="info">
+                    Этот файл показывает, как Kubernetes запускает несколько Spring Boot backend pods,
+                    балансирует нагрузку и автоматически увеличивает количество pod при высокой нагрузке.
+                </div>
+
+                <pre id="yamlOutput"></pre>
+            </section>
+
+        </div>
+    </main>
+
+</div>
+
+<script>
+    let currentYaml = "";
+
+    const ids = [
+        "replicas", "cpu", "memory",
+        "minReplicas", "maxReplicas", "targetCpu", "users"
+    ];
+
+    ids.forEach(id => {
+        document.getElementById(id).addEventListener("input", updateValues);
+        document.getElementById(id).addEventListener("input", generateYaml);
+    });
+
+    document.getElementById("hpaEnabled").addEventListener("change", generateYaml);
+
+    function updateValues() {
+        document.getElementById("replicasValue").innerText = document.getElementById("replicas").value;
+        document.getElementById("cpuValue").innerText = document.getElementById("cpu").value;
+        document.getElementById("memoryValue").innerText = document.getElementById("memory").value;
+        document.getElementById("minValue").innerText = document.getElementById("minReplicas").value;
+        document.getElementById("maxValue").innerText = document.getElementById("maxReplicas").value;
+        document.getElementById("cpuTargetValue").innerText = document.getElementById("targetCpu").value;
+        document.getElementById("usersValue").innerText = document.getElementById("users").value;
+    }
+
+    function generateYaml() {
+        updateValues();
+
+        const replicas = document.getElementById("replicas").value;
+        const cpu = document.getElementById("cpu").value;
+        const memory = document.getElementById("memory").value;
+        const hpaEnabled = document.getElementById("hpaEnabled").checked;
+        const minReplicas = document.getElementById("minReplicas").value;
+        const maxReplicas = document.getElementById("maxReplicas").value;
+        const targetCpu = document.getElementById("targetCpu").value;
+
+        let hpaBlock = "";
+
+        if (hpaEnabled) {
+            hpaBlock = `
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: subscription-backend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: subscription-backend
+  minReplicas: ${minReplicas}
+  maxReplicas: ${maxReplicas}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: ${targetCpu}`;
+        }
+
+        currentYaml = `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscription-backend
+spec:
+  replicas: ${replicas}
+  selector:
+    matchLabels:
+      app: subscription-backend
+  template:
+    metadata:
+      labels:
+        app: subscription-backend
+    spec:
+      containers:
+        - name: subscription-backend
+          image: subscription-platform:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "${cpu}"
+              memory: "${memory}Mi"
+            requests:
+              cpu: "0.5"
+              memory: "512Mi"
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres-service:5432/db"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "test"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "123"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscription-backend-service
+spec:
+  selector:
+    app: subscription-backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+${hpaBlock}`;
+
+        document.getElementById("yamlOutput").innerText = currentYaml;
+    }
+
+    function downloadYaml() {
+        if (!currentYaml) {
+            generateYaml();
+        }
+
+        const blob = new Blob([currentYaml], { type: "text/yaml" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "kubernetes.yaml";
+        a.click();
+
+        URL.revokeObjectURL(url);
+    }
+
+    generateYaml();
+</script>
+
+</body>
+</html>
